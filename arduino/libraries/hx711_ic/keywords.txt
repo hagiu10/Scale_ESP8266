@@ -1,0 +1,3 @@
+hx711_ic KEYWORD1
+init KEYWORD2
+read KEYWORD2

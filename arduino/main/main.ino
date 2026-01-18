@@ -1,8 +1,8 @@
 #include <commonLibs.h>
 #include <webServer.h>
 #include <webSocket.h>
-#include <rtos.h>
 #include <micro_sd.h>
+#include <hx711_ic.h>
 
 
 // the setup function runs once when you press reset or power the board
@@ -18,13 +18,18 @@ void setup() {
   // voltageMonitor.init();
   webServer::init();
   webServer::loadWebPage();
-  webSocket::init();
-  rtos::init();
-  micro_sd::init();
+  // webSocket::init();
+  // micro_sd::init();
+  // hx711_ic::init();
   delay(100);
 }
 
 // the loop function runs over and over again forever
 void loop() {
-  rtos::executeTasks();
+  static unsigned long last = 0; 
+  if (millis() - last > 60000) {  
+    last = millis(); 
+    // float weight = hx711_ic::readWeight();
+    printf("Looping... [%lu ms]\n", millis()); 
+  }
 }

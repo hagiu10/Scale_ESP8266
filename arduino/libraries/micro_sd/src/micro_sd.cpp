@@ -61,7 +61,7 @@ void micro_sd::writeFile(StaticJsonDocument<2048>& doc, String path = "/data.jso
     }
 }
 /** Write in array day value */
-void micro_sd::writeData(String name_location = "day", char date_time[] = "00:00", float weight) {
+void micro_sd::writeData(float weight, String name_location = "day", String date_time = "00:00") {
     // Read existing JSON data from the file
     StaticJsonDocument<2048> doc = readFile("/data.json");
     // Add new entry to the specified array

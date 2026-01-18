@@ -36,7 +36,7 @@ def build_cmd():
         print(result.stderr)
         return
     # Command to install the libraries
-    libraries = ["ESPAsyncWebServer", "ESPAsyncTCP", "ArduinoJson"]
+    libraries = ["ESPAsyncWebServer", "ESPAsyncTCP", "ArduinoJson","HX711 Arduino Library"]
     for lib in libraries:
         command = [path_arduino_exe,
                    "lib",

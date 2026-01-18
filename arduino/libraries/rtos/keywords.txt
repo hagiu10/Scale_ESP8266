@@ -1,5 +1,0 @@
-rtos KEYWORD1
-init KEYWORD2
-addTask KEYWORD2
-removeTask KEYWORD2
-executeTasks KEYWORD2

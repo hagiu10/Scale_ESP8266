@@ -6,4 +6,5 @@ ESPAsyncWebServer/
 ESPAsyncTCP/
 ArduinoJson/
 AsyncTCP/
+HX711_Arduino_Library/
 .vscode/

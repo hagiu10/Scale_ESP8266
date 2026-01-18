@@ -1,3 +1,0 @@
-timer KEYWORD1
-init KEYWORD2
-interrupt KEYWORD2

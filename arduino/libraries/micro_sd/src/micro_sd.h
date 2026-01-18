@@ -14,9 +14,9 @@ class micro_sd {
   public:
     micro_sd();
     static void init(void);
-    static StaticJsonDocument<2048> readData(void);
-    static void writeData(void);
-    static void writeData(String name_location = "day", char date_time[] = "00:00", float weight);
+    static StaticJsonDocument<2048> readFile(String path);
+    static void writeFile(StaticJsonDocument<2048>& doc, String path);
+    static void writeData(float weight, String name_location, String date_time);
     static String loadDataFromSD(void);
 };
 #endif // MICRO_SD_H
