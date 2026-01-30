@@ -1,0 +1,3 @@
+rtc KEYWORD1
+init KEYWORD2
+getDateTime KEYWORD2

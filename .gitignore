@@ -7,4 +7,6 @@ ESPAsyncTCP/
 ArduinoJson/
 AsyncTCP/
 HX711_Arduino_Library/
+RTClib/
+Adafruit_BusIO/
 .vscode/

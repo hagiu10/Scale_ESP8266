@@ -23,7 +23,7 @@ void webSocket::onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,
                AwsEventType type, void *arg, uint8_t *data, size_t len) {
     if (type == WS_EVT_CONNECT) { 
         #ifdef DEBUG
-        Serial.printf("WS client %u connected\n", client->id()); 
+        Serial.printf("webSocket::onWsEvent - WS client %u connected\n", client->id()); 
         #endif
     } else if (type == WS_EVT_DATA) { 
         String msg; 
@@ -36,7 +36,7 @@ void webSocket::onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,
         } 
         } else if (type == WS_EVT_DISCONNECT) { 
             #ifdef DEBUG
-            Serial.printf("WS client %u disconnected\n", client->id());
+            Serial.printf("webSocket::onWsEvent - WS client %u disconnected\n", client->id());
             #endif 
         }
 }

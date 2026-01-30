@@ -5,10 +5,11 @@
 #include <HX711.h>
 #include <ArduinoJson.h>
 
-#define D1 4  // GPIO14 on ESP8266
-#define D2 5  // GPIO12 on ESP8266
-#define HX_DT D1 
-#define HX_SCK D2
+#define D0 16 // GPIO16 on ESP8266
+#define D3 0  // GPIO0 on ESP8266
+
+#define HX_DT D0 
+#define HX_SCK D3
 
 extern HX711 scale;
 
