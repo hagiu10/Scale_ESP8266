@@ -31,7 +31,7 @@ void webSocket::onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,
             msg += (char)data[i];
         } 
         if (msg == "getData") { 
-            String json = micro_sd::loadDataFromSD(); 
+            String json;// = micro_sd::getDataFromSD(); 
             client->text(json); 
         } 
         } else if (type == WS_EVT_DISCONNECT) { 

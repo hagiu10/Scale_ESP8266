@@ -5,6 +5,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <ArduinoJson.h>
+#include <rtc.h>
 
 #define D8 15  // GPIO15 on ESP8266
 #define SD_CS_PIN D8  // Chip Select pin for the SD card module
@@ -28,9 +29,10 @@ class micro_sd {
   public:
     micro_sd();
     static void init(void);
-    static StaticJsonDocument<2048> readFile(String path);
-    static void writeFile(StaticJsonDocument<2048>& doc, String path);
-    static void writeData(float weight, String name_location, String date_time);
-    static String loadDataFromSD(void);
+    static bool writeFile(StaticJsonDocument<2048>& doc, String folder_year, String folder_month, String file_day);
+    static void writeData(float weight);
+    static String getDataFromSD(String year, String month, String day);
+    static String getDataFromSD(String year, String month);
+    static String getDataFromSD(String year);
 };
 #endif // MICRO_SD_H
