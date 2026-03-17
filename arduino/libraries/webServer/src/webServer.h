@@ -5,12 +5,13 @@
 #include <ESP8266WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncTCP.h>
+#include <DNSServer.h>
 #include <micro_sd.h>
 #include <rtc.h>
 #include <ArduinoJson.h>
 #include "../utils/webPage.h"
 
-
+extern DNSServer dnsServer; // Create a DNS server for captive portal functionality
 extern AsyncWebServer server;  // Create a server object on port 80
 
 // Function prototypes
@@ -26,5 +27,6 @@ class webServer: micro_sd, rtc {
     static void sendDataDay(AsyncWebServerRequest *request);
     static void sendDataMonth(AsyncWebServerRequest *request);
     static void sendDataYear(AsyncWebServerRequest *request); 
+    static void trikConectionInternet();
 };
 #endif // WEB_SERVER_H

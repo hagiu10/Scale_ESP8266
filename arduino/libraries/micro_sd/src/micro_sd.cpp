@@ -40,6 +40,7 @@ bool micro_sd::writeFile(StaticJsonDocument<2048>& doc, String folder_year, Stri
         Serial.println("micro_sd::writeFile - SD not initialized");
         #endif
         init();
+        return false;
     }
     if(!SD.exists(folder_year)) {
         #ifdef DEBUG
@@ -65,7 +66,9 @@ bool micro_sd::writeFile(StaticJsonDocument<2048>& doc, String folder_year, Stri
     } else {
         #ifdef DEBUG
         Serial.println("micro_sd::writeFile - Failed to open " + path + " for writing");
+        Serial.println("micro_sd::writeFile - SD reinitialization might be needed");
         #endif
+        init(); // Try reinitializing SD
         return false;
     }
     return true;
@@ -102,44 +105,81 @@ String micro_sd::getDataFromSD(String year, String month, String day) {
     String path = "/year_" + year + "/month_" + month + "/day_" + day + ".ndjson";
 
     if (!SD.exists(path)) {
+        #ifdef DEBUG
+        Serial.printf("micro_sd::getDataFromSD(year=%s, month=%s, day=%s) - File does not exist. [%lu ms]\n", year.c_str(), month.c_str(), day.c_str(), millis());
+        #endif
         return "[]";
     }
 
     File file = SD.open(path);
     if (!file) {
+        #ifdef DEBUG
+        Serial.printf("micro_sd::getDataFromSD(year=%s, month=%s, day=%s) - Failed to open file. [%lu ms]\n", year.c_str(), month.c_str(), day.c_str(), millis());
+        #endif
         return "[]";
     }
 
+    const int MAX_LINES = 300;
+    int totalLines = 0;
+
+    // 1. Numărăm liniile
+    while (file.available()) {
+        if (file.read() == '\n') totalLines++;
+    }
+
+    // 2. Calculăm câte linii trebuie să sărim
+    int skipLines = 0;
+    if (totalLines > MAX_LINES) {
+        skipLines = totalLines - MAX_LINES;
+    }
+
+    file.seek(0); // revenim la început
+
+    // 3. Sărim peste liniile inutile
+    while (skipLines > 0 && file.available()) {
+        if (file.read() == '\n') skipLines--;
+    }
+
+    // 4. Construim JSON doar cu ultimele 300 linii
     String result = "[";
     bool first = true;
 
     while (file.available()) {
         String line = file.readStringUntil('\n');
         line.trim();
-
-        if (line.length() == 0) continue;  // ignorăm liniile goale
+        if (line.length() == 0) continue;
 
         if (!first) result += ",";
         first = false;
 
-        result += line;  // linia NDJSON este deja un obiect JSON valid
+        result += line;  // linia NDJSON este deja JSON valid
     }
 
     file.close();
     result += "]";
-
+#ifdef DEBUG
+    Serial.printf("micro_sd::getDataFromSD(year=%s, month=%s, day=%s) - Retrieved data! [%lu ms]\n", 
+        year.c_str(), month.c_str(), day.c_str(), millis());
+#endif
     return result;
 }
+
 
 String micro_sd::getDataFromSD(String year, String month) {
     String path = "/year_" + year + "/month_" + month;
 
     if (!SD.exists(path)) {
+        #ifdef DEBUG
+        Serial.printf("micro_sd::getDataFromSD(year=%s, month=%s) - Month directory does not exist. [%lu ms]\n", year.c_str(), month.c_str(), millis());
+        #endif
         return "[]";
     }
 
     File monthDir = SD.open(path);
     if (!monthDir || !monthDir.isDirectory()) {
+        #ifdef DEBUG
+        Serial.printf("micro_sd::getDataFromSD(year=%s, month=%s) - Failed to open month directory. [%lu ms]\n", year.c_str(), month.c_str(), millis());
+        #endif
         return "[]";
     }
 
@@ -192,6 +232,10 @@ String micro_sd::getDataFromSD(String year, String month) {
     }
 
     result += "]";
+#ifdef DEBUG
+    Serial.printf("micro_sd::getDataFromSD(year=%s, month=%s) - Retrieved data! [%lu ms]\n", 
+        year.c_str(), month.c_str(), result.c_str(), millis());
+#endif
     return result;
 }
 
@@ -199,11 +243,17 @@ String micro_sd::getDataFromSD(String year) {
     String path = "/year_" + year;
 
     if (!SD.exists(path)) {
+        #ifdef DEBUG
+        Serial.printf("micro_sd::getDataFromSD(year=%s) - Year directory does not exist. [%lu ms]\n", year.c_str(), millis());
+        #endif
         return "[]";
     }
 
     File yearDir = SD.open(path);
     if (!yearDir || !yearDir.isDirectory()) {
+        #ifdef DEBUG
+        Serial.printf("micro_sd::getDataFromSD(year=%s) - Failed to open year directory. [%lu ms]\n", year.c_str(), millis());
+        #endif
         return "[]";
     }
 
@@ -242,6 +292,10 @@ String micro_sd::getDataFromSD(String year) {
     }
 
     result += "]";
+#ifdef DEBUG
+    Serial.printf("micro_sd::getDataFromSD(year=%s) - Retrieved data! [%lu ms]\n", 
+        year.c_str(), millis());
+#endif
     return result;
 }
 

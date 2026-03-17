@@ -10,11 +10,16 @@
 
 #define HX_DT D0 
 #define HX_SCK D3
+#define FACTOR 21100.f // Calibration factor (adjust as needed)
+#define GAIN 128 // Gain factor (128 for channel A, 64 for channel A, 32 for channel B)
 
 extern HX711 scale;
 
 // Function prototypes
 class hx711_ic {
+  private:
+    // You can add private members or functions here if needed
+    static void findFactor(); // Optional: Function to find the calibration factor (FACTOR)
   public:
     hx711_ic();
     static void init(void);

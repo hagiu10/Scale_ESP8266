@@ -1,5 +1,6 @@
 #include <webServer.h>
 
+DNSServer dnsServer; // Create a DNS server for captive portal functionality    
 AsyncWebServer server = AsyncWebServer(80);  // Create an instance of the AsyncWebServer class
 
 /** Constructor
@@ -19,7 +20,7 @@ void webServer::init(void) {
     }
 #endif
     IPAddress local_IP(192, 168, 0, 10);  // Set your desired IP address
-    IPAddress gateway(192, 168, 1, 1);
+    IPAddress gateway(192, 168, 0, 10);   // Set the gateway to the same IP for a captive portal
     IPAddress subnet(255, 255, 255, 0);
     result = WiFi.softAPConfig(local_IP, gateway, subnet);
 #ifdef DEBUG
@@ -29,9 +30,18 @@ void webServer::init(void) {
         Serial.printf("webServer::init - AP Config Failed. [%lu ms]\n", millis());
     }
 #endif
+//     result = dnsServer.start(53, "*", local_IP);
+// #ifdef DEBUG
+//     if (result) {
+//         Serial.printf("webServer::init - DNS server started successfully. [%lu ms]\n", millis());
+//     } else {
+//         Serial.printf("webServer::init - DNS server failed to start. [%lu ms]\n", millis());
+//     }
+// #endif
     loadWebPage();
     initHandleDataEndpoint();
     setRTCtime();
+    // trikConectionInternet();
     server.begin();
 }
 /** Load the web page
@@ -52,6 +62,33 @@ void webServer::initHandleDataEndpoint(void) {
   Serial.printf("webServer::initHandleDataEndpoint - Data endpoint initialized. [%lu ms]\n", millis());
   #endif
 }
+void webServer::trikConectionInternet() {
+    // server.on("/generate_204", HTTP_GET, [](AsyncWebServerRequest *request) {
+    //     request->send(204);
+    // });
+
+    // server.on("/gen_204", HTTP_GET, [](AsyncWebServerRequest *request) {
+    //     request->send(204);
+    // });
+
+    // server.on("/hotspot-detect.html", HTTP_GET, [](AsyncWebServerRequest *request) {
+    //     request->send(200, "text/html", "<html><body>OK</body></html>");
+    // });
+
+    // server.on("/captive.apple.com", HTTP_GET, [](AsyncWebServerRequest *request) {
+    //     request->send(200, "text/html", "<html><body>Success</body></html>");
+    // });
+
+    // server.on("/connecttest.txt", HTTP_GET, [](AsyncWebServerRequest *request) {
+    //     request->send(200, "text/plain", "OK");
+    // });
+
+    // server.on("/library/test/success.html", HTTP_GET, [](AsyncWebServerRequest *request) {
+    //     request->send(200, "text/plain", "OK");
+    // });
+
+}
+
 void webServer::setRTCtime() {
     server.on("/setRTC", HTTP_POST, [](AsyncWebServerRequest *request){},
     NULL,

@@ -13,7 +13,7 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect.
   }
-  Serial.println("Starting...\n");
+  Serial.println("Starting setup...\n");
 #endif
   rtc::init();
   webServer::init();
@@ -24,10 +24,11 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
+  // dnsServer.processNextRequest();
   static unsigned long last = 0; 
-  if (millis() - last > 10000) {  
+  if (millis() - last > 3000) {  
     last = millis(); 
     float weight = hx711_ic::readWeight(); 
-    micro_sd::writeData(weight);
+    micro_sd::writeData((weight*1000)/1000.0); // Write weight to SD card with three decimal places (adjust as needed);
   }
 }

@@ -35,7 +35,7 @@ String rtc::getDateTime(String partOfDateTime = "second") {
     DateTime now = _rtc.now();
 
     if (partOfDateTime.length() == 0) { 
-        return ""; 
+        return String(""); 
     }
 
     partOfDateTime.toLowerCase();

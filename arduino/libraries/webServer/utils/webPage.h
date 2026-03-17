@@ -251,23 +251,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   setTimeRTConESP();
   initTabs();
   updateEntries();
-  updateChart();
 });
 // Get measurements per day/month/year
 async function getWeightPerDay(year, month, day) {
-  const response = await fetch(`/data?year=${year}&month=${month}&day=${day}`);
-  const data = await response.json(); 
-  return data;
+  try {
+    const response = await fetch(`/data?year=${year}&month=${month}&day=${day}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json(); 
+    return data;
+  } catch (error) {
+    console.error('Error fetching daily data:', error);
+    return [];
+  }
 }
 async function getWeightPerMonth(year, month) {
-  const response = await fetch(`/data?year=${year}&month=${month}`);
-  const data = await response.json(); 
-  return data;
+  try {
+    const response = await fetch(`/data?year=${year}&month=${month}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json(); 
+    return data;
+  } catch (error) {
+    console.error('Error fetching monthly data:', error);
+    return [];
+  }
 }
 async function getWeightPerYear(year) {
-  const response = await fetch(`/data?year=${year}`);
-  const data = await response.json(); 
-  return data;
+  try {
+    const response = await fetch(`/data?year=${year}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json(); 
+    return data;
+  } catch (error) {
+    console.error('Error fetching yearly data:', error);
+    return [];
+  }
 }
 function setTimeRTConESP() {
   const now = new Date();
@@ -285,7 +308,7 @@ function setTimeRTConESP() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
-  .then(response => response.json())
+  .then(response => response.text())
   .then(msg => {
     console.log('RTC set response:', msg);
   });
@@ -458,6 +481,7 @@ function renderCalendar() {
       selectedDay = d;
       renderCalendar();
       console.log(`Ai selectat: ${selectedYear}-${selectedMonth+1}-${selectedDay}`);
+      updateEntries();
     });
 
     grid.appendChild(day);
@@ -472,6 +496,7 @@ document.getElementById("prevMonth").addEventListener("click", () => {
     selectedYear--;
   }
   renderCalendar();
+  updateEntries();
 });
 
 document.getElementById("nextMonth").addEventListener("click", () => {
@@ -481,17 +506,20 @@ document.getElementById("nextMonth").addEventListener("click", () => {
     selectedYear++;
   }
   renderCalendar();
+  updateEntries();
 });
 
 // Navigare an
 document.getElementById("prevYear").addEventListener("click", () => {
   selectedYear--;
   renderCalendar();
+  updateEntries();
 });
 
 document.getElementById("nextYear").addEventListener("click", () => {
   selectedYear++;
   renderCalendar();
+  updateEntries();
 });
 
 renderCalendar();

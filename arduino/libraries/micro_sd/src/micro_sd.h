@@ -11,7 +11,7 @@
 #define SD_CS_PIN D8  // Chip Select pin for the SD card module
 
 /* Pin definitions for SD card module 
-GPIO2 (D4) - Chip Select (CS)
+GPIO2 (D8) - Chip Select (CS)
 GPIO13 (D7) - Master Out Slave In (MOSI)
 GPIO12 (D6) - Master In Slave Out (MISO)
 GPIO14 (D5) - Serial Clock (SCK)
