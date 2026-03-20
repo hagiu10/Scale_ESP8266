@@ -13,22 +13,35 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect.
   }
-  Serial.println("Starting setup...\n");
+  Serial.println("\n\nStarting setup...\n");
 #endif
+  pinMode(BUTTON_PIN, INPUT_PULLUP); // Set button pin as input with pull-up resistor
   rtc::init();
-  webServer::init();
   micro_sd::init();
   hx711_ic::init();
+  #ifdef DEBUG
+  Serial.printf("\nSetup complete. [%lu ms]\n", millis());
+  #endif
   delay(100);
 }
 
 // the loop function runs over and over again forever
 void loop() {
-  // dnsServer.processNextRequest();
-  static unsigned long last = 0; 
-  if (millis() - last > 3000) {  
-    last = millis(); 
-    float weight = hx711_ic::readWeight(); 
-    micro_sd::writeData((weight*1000)/1000.0); // Write weight to SD card with three decimal places (adjust as needed);
-  }
+  handleButton();
+  webServer::handleAPTimeout(); // Check if we need to stop the AP due to timeout
+ 
+  // static unsigned long last = 0; 
+  // if (millis() - last > 3000) {  
+  //   last = millis(); 
+  //   float weight = hx711_ic::readWeight(); 
+  //   micro_sd::writeData((weight*1000)/1000.0); // Write weight to SD card with three decimal places (adjust as needed);
+  // }
+}
+void handleButton() {
+    static bool laststate = HIGH;
+    bool currentState = digitalRead(BUTTON_PIN);
+    if (currentState == LOW && laststate == HIGH) {
+        webServer::startAP();
+    }
+    laststate = currentState;
 }

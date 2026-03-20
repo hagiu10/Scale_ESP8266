@@ -10,6 +10,12 @@ micro_sd::micro_sd() {
 /** Initialize the SD card
  */
 void micro_sd::init(void) {
+    // Power on the adapter sd card    
+    pinMode(SD_POWER_PIN, OUTPUT);
+    digitalWrite(SD_POWER_PIN, LOW); // Power off SD card
+    delay(100); // Wait for power to stabilize
+    digitalWrite(SD_POWER_PIN, HIGH);
+    delay(100); // Wait for SD card to power up
     // Reinitialize SPI and SD to ensure proper setup
     SD.end(); // Close SD if it was previously opened 
     SPI.end(); // Close SPI 

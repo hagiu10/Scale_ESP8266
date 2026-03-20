@@ -1,7 +1,8 @@
 #include <webServer.h>
-
-DNSServer dnsServer; // Create a DNS server for captive portal functionality    
-AsyncWebServer server = AsyncWebServer(80);  // Create an instance of the AsyncWebServer class
+   
+AsyncWebServer* server = nullptr;  // Initialize the server pointer to nullptr
+bool apActive = false;
+unsigned long apStartTime = 0;
 
 /** Constructor
  */
@@ -11,6 +12,8 @@ webServer::webServer(){
 /** Initialize the web server
  */
 void webServer::init(void) {
+    server = new AsyncWebServer(80);  // Create a new server instance on port 80
+    WiFi.mode(WIFI_AP); // Set Wi-Fi mode to Access Point
     boolean result =  WiFi.softAP("Cantar-Wi-Fi-1");
 #ifdef DEBUG
     if (result) {
@@ -30,25 +33,59 @@ void webServer::init(void) {
         Serial.printf("webServer::init - AP Config Failed. [%lu ms]\n", millis());
     }
 #endif
-//     result = dnsServer.start(53, "*", local_IP);
-// #ifdef DEBUG
-//     if (result) {
-//         Serial.printf("webServer::init - DNS server started successfully. [%lu ms]\n", millis());
-//     } else {
-//         Serial.printf("webServer::init - DNS server failed to start. [%lu ms]\n", millis());
-//     }
-// #endif
     loadWebPage();
     initHandleDataEndpoint();
     setRTCtime();
-    // trikConectionInternet();
-    server.begin();
+    server->begin();
+}
+void webServer::startAP() {
+    if (!apActive) {
+        init();
+        apStartTime = millis();
+        apActive = true;
+        pinMode(LED_PIN, OUTPUT);
+        digitalWrite(LED_PIN, LOW); // Turn on the LED when AP is active
+        #ifdef DEBUG
+        Serial.printf("webServer::startAP - Access Point started. [%lu ms]\n", millis());
+        #endif
+    }
+}
+void webServer::stopAP() {
+    if (apActive) {
+        if (server != nullptr) {
+            delete server; // Free the server instance
+            server = nullptr; // Set the pointer to nullptr to avoid dangling pointer issues
+            #ifdef DEBUG
+            Serial.printf("webServer::stopAP - Server instance deleted. [%lu ms]\n", millis());
+            #endif
+        }
+        WiFi.softAPdisconnect(true);
+        WiFi.mode(WIFI_OFF);
+        apActive = false;
+        digitalWrite(LED_PIN, HIGH); // Turn off the LED when AP is stopped
+        pinMode(BUTTON_PIN, INPUT_PULLUP); // Set the button pin back to input with pull-up
+        #ifdef DEBUG
+        Serial.printf("webServer::stopAP - Access Point stopped. [%lu ms]\n", millis());
+        Serial.printf("webServer::stopAP - Only to stop AP is to reset software. [%lu ms]\n", millis());
+        #endif
+        ESP.restart(); // Restart the ESP to ensure a clean state after stopping the AP
+    }
+}
+void webServer::handleAPTimeout() {
+    if (!apActive) return; // If AP is not active, do nothing
+
+    if (WiFi.softAPgetStationNum() > 0 ) {
+        return; // If there are clients connected, do not stop the AP
+    }
+    if (millis() - apStartTime > 30000) { // 30 seconds timeout
+        stopAP();
+    }
 }
 /** Load the web page
  */
 void webServer::loadWebPage(void) {
     // Load the web page
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    server->on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send_P(200, "text/html", webPage);
     }); 
 #ifdef DEBUG
@@ -57,40 +94,14 @@ void webServer::loadWebPage(void) {
 }
 /** Endpoint */
 void webServer::initHandleDataEndpoint(void) {
-  server.on("/data", HTTP_GET, handleDataRequest);
+  server->on("/data", HTTP_GET, handleDataRequest);
   #ifdef DEBUG
   Serial.printf("webServer::initHandleDataEndpoint - Data endpoint initialized. [%lu ms]\n", millis());
   #endif
 }
-void webServer::trikConectionInternet() {
-    // server.on("/generate_204", HTTP_GET, [](AsyncWebServerRequest *request) {
-    //     request->send(204);
-    // });
-
-    // server.on("/gen_204", HTTP_GET, [](AsyncWebServerRequest *request) {
-    //     request->send(204);
-    // });
-
-    // server.on("/hotspot-detect.html", HTTP_GET, [](AsyncWebServerRequest *request) {
-    //     request->send(200, "text/html", "<html><body>OK</body></html>");
-    // });
-
-    // server.on("/captive.apple.com", HTTP_GET, [](AsyncWebServerRequest *request) {
-    //     request->send(200, "text/html", "<html><body>Success</body></html>");
-    // });
-
-    // server.on("/connecttest.txt", HTTP_GET, [](AsyncWebServerRequest *request) {
-    //     request->send(200, "text/plain", "OK");
-    // });
-
-    // server.on("/library/test/success.html", HTTP_GET, [](AsyncWebServerRequest *request) {
-    //     request->send(200, "text/plain", "OK");
-    // });
-
-}
 
 void webServer::setRTCtime() {
-    server.on("/setRTC", HTTP_POST, [](AsyncWebServerRequest *request){},
+    server->on("/setRTC", HTTP_POST, [](AsyncWebServerRequest *request){},
     NULL,
     [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
     

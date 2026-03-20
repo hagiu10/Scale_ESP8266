@@ -41,7 +41,7 @@ float hx711_ic::readWeight(void) {
         Serial.println("hx711_ic::readWeight - HX711 not ready");
         Serial.println("hx711_ic::readWeight - Trying to reinitialize...");
         #endif
-        return NULL;
+        return 0.0; // Return 0 if the scale is not ready
     }
     float weight = scale.get_units(10); // Read average of 10 readings
     

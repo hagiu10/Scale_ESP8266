@@ -30,11 +30,15 @@ String rtc::getDateTime(String partOfDateTime = "second") {
         #ifdef DEBUG
         Serial.println("rtc::getDateTime - RTC is NOT running!");
         #endif
+        init(); // Try to initialize RTC again
         return String("");
     }
     DateTime now = _rtc.now();
 
     if (partOfDateTime.length() == 0) { 
+        #ifdef DEBUG
+        Serial.println("rtc::getDateTime - Invalid partOfDateTime parameter, returning empty string");
+        #endif
         return String(""); 
     }
 

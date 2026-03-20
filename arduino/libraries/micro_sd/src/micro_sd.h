@@ -7,6 +7,7 @@
 #include <ArduinoJson.h>
 #include <rtc.h>
 
+#define SD_POWER_PIN 3 // GPIO3 (RX) - Power control pin for SD card module
 #define D8 15  // GPIO15 on ESP8266
 #define SD_CS_PIN D8  // Chip Select pin for the SD card module
 
