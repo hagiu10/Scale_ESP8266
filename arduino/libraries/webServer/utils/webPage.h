@@ -9,7 +9,7 @@ const char webPage[] PROGMEM = R"===(
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weight Management Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/chart.min.js"></script>
 
   <style>
     /* Viewport pentru mobil */
@@ -192,7 +192,7 @@ const char webPage[] PROGMEM = R"===(
 
 <body>
   <div class="weight-management-title">
-    <span class="weight-management-title">Weight Management</span>
+    <span class="weight-management-title">Cantar Wi-Fi</span>
   </div>
   <div class="calendar-container">
 

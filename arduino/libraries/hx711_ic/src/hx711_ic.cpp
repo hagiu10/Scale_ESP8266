@@ -25,7 +25,11 @@ void hx711_ic::init(void) {
         #endif
         return;
     }
+    #ifdef TARE_ON_STARTUP
+    scale.set_offset(TARE_ON_STARTUP); // Optionally tare the scale on startup
+    #else
     scale.tare();  // Reset the scale to 0
+    #endif
     #ifdef DEBUG
     Serial.println("hx711_ic::init - HX711 initialized");
     #endif
@@ -43,7 +47,7 @@ float hx711_ic::readWeight(void) {
         #endif
         return 0.0; // Return 0 if the scale is not ready
     }
-    float weight = scale.get_units(10); // Read average of 10 readings
+    float weight = abs(scale.get_units(10)); // Read average of 10 readings
     
     #ifdef DEBUG
     Serial.printf("hx711_ic::readWeight - Weight: %.3f\n", weight);

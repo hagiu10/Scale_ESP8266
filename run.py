@@ -3,6 +3,7 @@ from cli.config import config
 from cli.install import install
 from cli.flashing import flashing
 from cli.tools import copyHtmlToProgMem
+from cli.spiffs import flash_spiffs
 import sys
 
 
@@ -18,6 +19,7 @@ def print_help():
           -h, --help   Show this message and exit.
           -o, --open-serial-terminal Open serial terminal with ESP8266
           -html, --copy-html-to-progmem  Copy the HTML file to a C++ header file with PROGMEM format
+          -fs, --flash-spiffs  Flash the SPIFFS image onto the ESP8266
         """
         print(help_text)
 
@@ -39,7 +41,9 @@ def run():
     if '--install-arduino-cli' in sys.argv or '-i' in sys.argv:
         install.install_ard_cli()
     if '--copy-html-to-progmem' in sys.argv or '-html' in sys.argv: 
-        copyHtmlToProgMem.copy_html_to_progmem(PATH_HTML_FILE, PATH_OUTPUT_FILE)   
+        copyHtmlToProgMem.copy_html_to_progmem(PATH_HTML_FILE, PATH_OUTPUT_FILE) 
+    if '--flash-spiffs' in sys.argv or '-fs' in sys.argv:
+        flash_spiffs.flash_spiffs_cmd()
 
 
 if __name__ == "__main__":

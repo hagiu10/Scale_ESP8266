@@ -13,22 +13,24 @@ void rtc::init(void) {
         #ifdef DEBUG
         Serial.println("rtc::init - Couldn't find rtc");
         #endif
+        return;
     }
     if (!_rtc.isrunning()) {
         _rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         #ifdef DEBUG
         Serial.println("rtc::init - RTC was NOT running, set the time!");
         #endif
+        return;
     }
     #ifdef DEBUG
-    Serial.println("rtc::init - RTC initialized");
+    Serial.println("rtc::init - RTC initialized!");
     #endif
 }
 
 String rtc::getDateTime(String partOfDateTime = "second") {
     if (!_rtc.isrunning()) {
         #ifdef DEBUG
-        Serial.println("rtc::getDateTime - RTC is NOT running!");
+        Serial.println("rtc::getDateTime - RTC is NOT running!\nTrying to reinitialize...");
         #endif
         init(); // Try to initialize RTC again
         return String("");

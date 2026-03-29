@@ -33,6 +33,13 @@ void webServer::init(void) {
         Serial.printf("webServer::init - AP Config Failed. [%lu ms]\n", millis());
     }
 #endif
+    if (!LittleFS.begin()) {
+        #ifdef DEBUG
+        Serial.printf("webServer::init - Failed to mount LittleFS. [%lu ms]\n", millis());
+        #endif
+        return;
+    }
+    loadChartJS();
     loadWebPage();
     initHandleDataEndpoint();
     setRTCtime();
@@ -80,6 +87,22 @@ void webServer::handleAPTimeout() {
     if (millis() - apStartTime > 30000) { // 30 seconds timeout
         stopAP();
     }
+}
+void webServer::loadChartJS() {
+    server->on("/chart.min.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+        File file = LittleFS.open("/chart.min.js", "r");
+        if (!file) {
+            #ifdef DEBUG
+            Serial.printf("webServer::loadChartJS - Failed to open chart.min.js. [%lu ms]\n", millis());
+            #endif
+            return;
+        }
+        request->send(file, "application/javascript"); // Serve the JavaScript file with the correct MIME type
+        file.close();
+    }); 
+#ifdef DEBUG
+    Serial.printf("webServer::loadChartJS - Chart.js endpoint initialized. [%lu ms]\n", millis());
+#endif
 }
 /** Load the web page
  */

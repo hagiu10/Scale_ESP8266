@@ -12,6 +12,7 @@
 #define HX_SCK D3
 #define FACTOR 21100.f // Calibration factor (adjust as needed)
 #define GAIN 128 // Gain factor (128 for channel A, 64 for channel A, 32 for channel B)
+#define TARE_ON_STARTUP 651631 // Optional: Set this to a known tare value if you want to tare the scale on startup (adjust as needed)
 
 extern HX711 scale;
 

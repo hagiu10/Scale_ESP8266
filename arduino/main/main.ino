@@ -4,7 +4,7 @@
 #include <hx711_ic.h>
 #include <rtc.h>
 
-
+#define REPEAT_READ_WEIGHT_INTERVAL 3e3 // Interval in milliseconds to read weight
 // the setup function runs once when you press reset or power the board
 void setup() {
 #ifdef DEBUG
@@ -29,13 +29,7 @@ void setup() {
 void loop() {
   handleButton();
   webServer::handleAPTimeout(); // Check if we need to stop the AP due to timeout
- 
-  // static unsigned long last = 0; 
-  // if (millis() - last > 3000) {  
-  //   last = millis(); 
-  //   float weight = hx711_ic::readWeight(); 
-  //   micro_sd::writeData((weight*1000)/1000.0); // Write weight to SD card with three decimal places (adjust as needed);
-  // }
+  handleReadWeight();
 }
 void handleButton() {
     static bool laststate = HIGH;
@@ -44,4 +38,12 @@ void handleButton() {
         webServer::startAP();
     }
     laststate = currentState;
+}
+void handleReadWeight() {
+    static unsigned long last = 0; 
+    if (millis() - last > REPEAT_READ_WEIGHT_INTERVAL) {  
+        last = millis();
+        float weight = hx711_ic::readWeight(); 
+        micro_sd::writeData((weight*1000)/1000.0); // Write weight to SD card with three decimal places (adjust as needed);
+    }
 }

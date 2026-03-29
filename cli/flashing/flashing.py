@@ -10,20 +10,19 @@ def flashing_cmd():
     ROOT = Path(__file__).parent.parent.parent.resolve()
     # Path to the arduino-cli executable
     path_arduino_exe = ROOT/ "bin"/ "arduino-cli.exe"
-    # Path to the main arduino sketch
-    path_arduini_sketch = ROOT/ "arduino"/ "main"/ "main.ino"
     # Define the core to build for
-    board_core = "esp8266:esp8266"
-    # Command to build the project
+    board_core = "esp8266:esp8266:generic"
+    # Schech to use for flashing
+    path_arduino_sketch = ROOT/ "arduino" / "main" / "main.ino"
+
+
     com_port = get_com_port_ESp8266()
-    # Path to the configuration file
-    config_file = ROOT / "workspace" / "arduino" / "arduino-cli.yaml"
+
     command = [path_arduino_exe, 
                "upload",
                "-p", com_port,
-               "--fqbn",f"{board_core}:generic", 
-               path_arduini_sketch,
-               "--config-file",config_file
+               "--fqbn",board_core,
+                path_arduino_sketch
                ]
 
     result = subprocess.run(command, shell=True, 

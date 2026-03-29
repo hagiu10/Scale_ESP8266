@@ -4,6 +4,7 @@
 #include <commonLibs.h>
 #include <ESP8266WiFi.h>
 #include <ESPAsyncWebServer.h>
+#include <LittleFS.h>
 #include <micro_sd.h>
 #include <rtc.h>
 #include <ArduinoJson.h>
@@ -29,5 +30,6 @@ class webServer: micro_sd, rtc {
     static void sendDataMonth(AsyncWebServerRequest *request);
     static void sendDataYear(AsyncWebServerRequest *request); 
     static void stopAP(); 
+    static void loadChartJS();
 };
 #endif // WEB_SERVER_H
