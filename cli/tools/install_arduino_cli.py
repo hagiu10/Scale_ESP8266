@@ -2,7 +2,7 @@ from pathlib import Path
 import subprocess
 
 
-def install_ard_cli():
+def install_arduino_cli():
     """Install the executable."""
      # Find bash.exe
     bash_path = find_bash_exe()
