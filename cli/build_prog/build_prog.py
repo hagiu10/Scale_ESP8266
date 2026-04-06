@@ -15,7 +15,7 @@ def build_prog_cmd():
     path_config_file = ROOT/ "workspace"/ "arduino"/ "arduino-cli.yaml"
     
     # Define the core to build for
-    board_core = "esp8266:esp8266:generic:eesz=4M1M"
+    board_core = "esp8266:esp8266:generic:eesz=4M3M"
 
     # Command to build the project
     command = [path_arduino_exe, 

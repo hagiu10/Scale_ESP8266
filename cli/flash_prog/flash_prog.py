@@ -11,7 +11,7 @@ def flash_prog_cmd():
     # Path to the arduino-cli executable
     path_arduino_exe = ROOT/ "bin"/ "arduino-cli.exe"
     # Define the core to build for
-    board_core = "esp8266:esp8266:generic:eesz=4M1M"
+    board_core = "esp8266:esp8266:generic:eesz=4M3M"
     # Schech to use for flashing
     path_arduino_sketch = ROOT/ "arduino" / "main" / "main.ino"
 

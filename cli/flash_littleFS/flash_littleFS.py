@@ -22,7 +22,7 @@ def flash_littleFS_cmd():
     # Path to the SPIFFS image
     path_spiffs_image = ROOT/ "bin"/ "littleFS.bin"
     # Address to flash the SPIFFS image on the ESP8266
-    address = "0x100000"
+    address = "0x106000"
 
     create_littleFS_image() # Create the littleFS image before flashing it
 

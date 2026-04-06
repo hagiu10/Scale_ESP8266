@@ -21,23 +21,7 @@ void setup() {
   // hx711_ic::init();
   if (!LittleFS.begin()) {
     Serial.println("An error has occurred while mounting LittleFS");
-    return;
   }
-  FSInfo info;
-  LittleFS.info(info);
-
-  Serial.printf("LittleFS total bytes: %u\n", info.totalBytes);
-  Serial.printf("LittleFS used bytes: %u\n", info.usedBytes);
-  Serial.printf("LittleFS block size: %u\n", info.blockSize);
-  Serial.printf("LittleFS page size: %u\n", info.pageSize);
-
-  // Adresa de start = flash_size - fs_size
-  uint32_t flash_size = ESP.getFlashChipSize();
-  uint32_t fs_size = info.totalBytes;
-
-  uint32_t fs_start = flash_size - fs_size;
-
-  Serial.printf("LittleFS start address: 0x%06X\n", fs_start);
   #ifdef DEBUG
   Serial.printf("\nSetup complete. [%lu ms]\n", millis());
   #endif
@@ -69,21 +53,37 @@ void handleReadWeight() {
     }
 }
 void write_file_test_littlefs() {
-    File file = LittleFS.open("/test.txt", "w");
-    if (!file) {
-        Serial.println("Failed to open file for writing");
-    }
-    file.println("Hello, LittleFS!");
-    file.close();
+  FSInfo info;
+  LittleFS.info(info);
 
-    // Read all files in the root directory
-    Serial.println("\nFiles in root directory:");
-    File root = LittleFS.open("/", "r");
-    File fileEntry = root.openNextFile();
-    while (fileEntry) {
-        Serial.print(" - ");
-        Serial.println(fileEntry.name());
-        fileEntry = root.openNextFile();
-    }
-    root.close();
+  Serial.printf("LittleFS total bytes: %u\n", info.totalBytes);
+  Serial.printf("LittleFS used bytes: %u\n", info.usedBytes);
+  Serial.printf("LittleFS block size: %u\n", info.blockSize);
+  Serial.printf("LittleFS page size: %u\n", info.pageSize);
+
+  // Adresa de start = flash_size - fs_size
+  uint32_t flash_size = ESP.getFlashChipSize();
+  uint32_t fs_size = info.totalBytes;
+
+  uint32_t fs_start = flash_size - fs_size;
+
+  Serial.printf("LittleFS start address: 0x%06X\n", fs_start);
+
+  File file = LittleFS.open("/test.txt", "w");
+  if (!file) {
+      Serial.println("Failed to open file for writing");
+  }
+  file.println("Hello, LittleFS!");
+  file.close();
+
+  // Read all files in the root directory
+  Serial.println("\nFiles in root directory:");
+  File root = LittleFS.open("/", "r");
+  File fileEntry = root.openNextFile();
+  while (fileEntry) {
+      Serial.print(" - ");
+      Serial.println(fileEntry.name());
+      fileEntry = root.openNextFile();
+  }
+  root.close();
 }

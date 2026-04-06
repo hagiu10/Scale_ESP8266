@@ -6,6 +6,7 @@ from cli.tools import copyHtmlToProgMem
 from cli.flash_littleFS import flash_littleFS
 from cli.read_flash import read_flash
 from cli.tools import open_terminal
+from cli.erase_flash import erase_flash_littlefs
 import sys
 
 
@@ -48,7 +49,8 @@ def run():
         flash_littleFS.flash_littleFS_cmd()
     if 'read_flash' in sys.argv or 'rf' in sys.argv:
         read_flash.read_flash_cmd()
-
+    if 'erase-flash-littlefs' in sys.argv or 'efl' in sys.argv:
+        erase_flash_littlefs.erase_flash_littlefs()
 
 if __name__ == "__main__":
     run()

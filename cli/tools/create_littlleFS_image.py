@@ -19,7 +19,7 @@ def create_littleFS_image():
     command = [path_mklittlefs_exe, 
                "-c", path_data_dir,
                "-p", "256",
-               "-b", "4096",
+               "-b", "8192",
                "-s", "1048576",
                path_littlefs_image
                ]
