@@ -18,7 +18,7 @@ def read_flash_cmd():
     # Address to read the flash memory from
     address = "0x100000"
     # Size of the flash memory to read
-    size = "0x3000" # Read 12KB of flash memory
+    size = "0x4000" # Read 12KB of flash memory
 
     com_port = get_com_port_ESP8266.get_com_port_ESP8266()
 

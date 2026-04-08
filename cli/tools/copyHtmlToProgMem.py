@@ -1,8 +1,11 @@
 
+PATH_HTML_FILE = 'arduino/libraries/webServer/WebPage/webPage.html'
+PATH_OUTPUT_FILE = 'arduino/libraries/webServer/WebPage/webPage.h'
+
 # Copy the HTML file to a C++ header file with PROGMEM format
 
-def copy_html_to_progmem(path_html_file, path_output_file):
-    with open(path_html_file, 'r', encoding='utf-8') as html_file:
+def copy_html_to_progmem():
+    with open(PATH_HTML_FILE, 'r', encoding='utf-8') as html_file:
         html_content = html_file.read()
 
     # Create the PROGMEM string
@@ -18,6 +21,6 @@ const char webPage[] PROGMEM = R"===(
 '''
 
     # Write to the output file
-    with open(path_output_file, 'w', encoding='utf-8') as output_file:
+    with open(PATH_OUTPUT_FILE, 'w', encoding='utf-8') as output_file:
         output_file.write(progmem_string)
-    print(f"Successfully copied HTML content from {path_html_file} to {path_output_file} in PROGMEM format.")    
+    print(f"Successfully copied HTML content from {PATH_HTML_FILE} to {PATH_OUTPUT_FILE} in PROGMEM format.")    

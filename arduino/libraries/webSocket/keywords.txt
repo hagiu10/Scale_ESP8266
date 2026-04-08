@@ -1,3 +1,0 @@
-webSocket KEYWORD1
-init KEYWORD2
-webSocketHandler KEYWORD2

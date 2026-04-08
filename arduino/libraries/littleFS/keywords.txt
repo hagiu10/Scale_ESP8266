@@ -1,0 +1,3 @@
+littleFS KEYWORD1
+init KEYWORD2
+writeChartJS KEYWORD2

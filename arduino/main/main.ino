@@ -3,6 +3,7 @@
 #include <micro_sd.h>
 #include <hx711_ic.h>
 #include <rtc.h>
+#include <create_littleFS_files.h>
 
 #define REPEAT_READ_WEIGHT_INTERVAL 3e3 // Interval in milliseconds to read weight
 // the setup function runs once when you press reset or power the board
@@ -19,9 +20,7 @@ void setup() {
   // rtc::init();
   // micro_sd::init();
   // hx711_ic::init();
-  if (!LittleFS.begin()) {
-    Serial.println("An error has occurred while mounting LittleFS");
-  }
+  // LittleFSFile::init();
   #ifdef DEBUG
   Serial.printf("\nSetup complete. [%lu ms]\n", millis());
   #endif
@@ -39,7 +38,8 @@ void handleButton() {
     bool currentState = digitalRead(BUTTON_PIN);
     if (currentState == LOW && laststate == HIGH) {
         //webServer::startAP();
-        write_file_test_littlefs();
+        LittleFSFile::init();
+        verify_littlefs();
         delay(200); // Debounce delay
     }
     laststate = currentState;
@@ -52,7 +52,7 @@ void handleReadWeight() {
         micro_sd::writeData((weight*1000)/1000.0); // Write weight to SD card with three decimal places (adjust as needed);
     }
 }
-void write_file_test_littlefs() {
+void verify_littlefs() {
   FSInfo info;
   LittleFS.info(info);
 
@@ -68,13 +68,6 @@ void write_file_test_littlefs() {
   uint32_t fs_start = flash_size - fs_size;
 
   Serial.printf("LittleFS start address: 0x%06X\n", fs_start);
-
-  File file = LittleFS.open("/test.txt", "w");
-  if (!file) {
-      Serial.println("Failed to open file for writing");
-  }
-  file.println("Hello, LittleFS!");
-  file.close();
 
   // Read all files in the root directory
   Serial.println("\nFiles in root directory:");

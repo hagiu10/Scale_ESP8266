@@ -23,11 +23,11 @@ def print_help():
           i, install-arduino-cli          Install the arduino-cli executable
           cp, copy-html-to-progmem       Copy the HTML file to a C++ header file with PROGMEM format
           ffs, flash-littlefs           Flash the littleFS image onto the ESP8266
+          rf, read_flash                Read the flash memory of the ESP8266 and save it to a file
+          efl, erase-flash-littlefs     Erase the littleFS flash memory of the ESP8266
         """
         print(help_text)
-
-PATH_HTML_FILE = 'arduino/libraries/webServer/utils/webPage.html'
-PATH_OUTPUT_FILE = 'arduino/libraries/webServer/utils/webPage.h'
+        
 
 def run():
     """Command line interface for the Scale_ESP8266 project."""
@@ -44,7 +44,7 @@ def run():
     if 'install-arduino-cli' in sys.argv or 'i' in sys.argv:
         install_arduino_cli.install_arduino_cli()
     if 'copy-html-to-progmem' in sys.argv or 'cp' in sys.argv: 
-        copyHtmlToProgMem.copy_html_to_progmem(PATH_HTML_FILE, PATH_OUTPUT_FILE) 
+        copyHtmlToProgMem.copy_html_to_progmem() 
     if 'flash-littlefs' in sys.argv or 'ffs' in sys.argv:
         flash_littleFS.flash_littleFS_cmd()
     if 'read_flash' in sys.argv or 'rf' in sys.argv:
