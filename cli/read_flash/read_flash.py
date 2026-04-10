@@ -18,7 +18,7 @@ def read_flash_cmd():
     # Address to read the flash memory from
     address = "0x100000"
     # Size of the flash memory to read
-    size = "0x4000" # Read 12KB of flash memory
+    size = "0x100000" # Read 1MB of flash memory starting from the specified address
 
     com_port = get_com_port_ESP8266.get_com_port_ESP8266()
 
@@ -34,4 +34,10 @@ def read_flash_cmd():
                             encoding="utf-8",
                             errors="replace")
     print(f"\nStdout:\n{result.stdout}")
+
+    success_message = "Hard resetting via RTS pin..."
+    if success_message in result.stdout:
+        print("Flash memory read successfully.")
+    else:
+        print("Failed to read flash memory.")
     

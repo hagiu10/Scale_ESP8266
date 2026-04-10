@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 #ifndef DEBUG
-#define DEBUG true
+// #define DEBUG true
 #endif
 
 #define D4 2

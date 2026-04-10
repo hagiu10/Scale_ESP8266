@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weight Management Dashboard</title>
-  <script src="/chart.min.js"></script>
+  <!-- <script src="/chart.min.js"></script> -->
 
   <style>
     /* Viewport pentru mobil */
@@ -246,6 +246,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setTimeRTConESP();
   initTabs();
   updateEntries();
+  updateChart();
 });
 // Get measurements per day/month/year
 async function getWeightPerDay(year, month, day) {
@@ -381,13 +382,19 @@ function updateChart() {
 
 function renderChart(labels, data) {
   if (!labels.length || !data.length) {
+    // for (let i = 0; i < 5; i++) {
+    //   labels.push("10:0"+i);
+    //   data.push(201.76 + i*0.01);
+    // }
     labels.push("No data for selected period!");
     data.push(0);
   }
   setTimeout(() => {
     const ctx = document.getElementById('weightChart').getContext('2d');
+
     if (chart) chart.destroy();
-    chart = new Chart(ctx, {
+
+    chart = new MiniChart(ctx, {
       type: 'line',
       data: {
         labels,
@@ -518,6 +525,152 @@ document.getElementById("nextYear").addEventListener("click", () => {
 });
 
 renderCalendar();
+
+// Mini Chart script class
+class MiniChart {
+    constructor(ctx, config) {
+        this.ctx = ctx;
+        this.config = config;
+        this.draw();
+    }
+
+    destroy() {
+        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    }
+
+    draw() {
+        const { labels, datasets } = this.config.data;
+        const { x, y } = this.config.options.scales;
+
+        const data = datasets[0].data;
+        const color = datasets[0].borderColor || "#007bff";
+        const pointRadius = datasets[0].pointRadius || 3;
+
+        const canvas = this.ctx.canvas;
+        const ctx = this.ctx;
+
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+
+        const W = canvas.width;
+        const H = canvas.height;
+
+        const margin = 60;
+
+        const minY = Math.min(...data);
+        const maxY = Math.max(...data);
+
+        const scaleX = (i) => margin + (i / (labels.length - 1)) * (W - margin * 2);
+        const scaleY = (v) => H - margin - ((v - minY) / (maxY - minY)) * (H - margin * 2);
+
+        ctx.clearRect(0, 0, W, H);
+
+        // AXA X
+        ctx.beginPath();
+        ctx.moveTo(margin, H - margin);
+        ctx.lineTo(W - margin, H - margin);
+        ctx.stroke();
+
+        // AXA Y
+        ctx.beginPath();
+        ctx.moveTo(margin, margin);
+        ctx.lineTo(margin, H - margin);
+        ctx.stroke();
+
+        // Titlu axă X
+        ctx.font = "12px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(x.title.text, W / 2, H - 5);
+
+        // Titlu axă Y
+        ctx.save();
+        ctx.translate(15, H / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(y.title.text, 0, 0);
+        ctx.restore();
+
+        // === MARCAJE AXA X ===
+        // Lățimea minimă necesară pentru o etichetă (în px)
+        const minLabelSpacing = 50;
+
+        // Câte etichete încap pe axă
+        const maxXTicks = Math.floor((W - margin * 2) / minLabelSpacing);
+        const stepX = Math.ceil(labels.length / maxXTicks);
+
+        ctx.font = "10px Arial";
+        ctx.textAlign = "center";
+
+        for (let i = 0; i < labels.length; i += stepX) {
+            const px = scaleX(i);
+            ctx.fillText(labels[i], px, H - margin + 12);
+        }
+
+        // === MARCAJE AXA Y ===
+        // Înălțimea minimă necesară pentru o etichetă Y (în px)
+        const minYLabelSpacing = 30;
+
+        // Câte etichete încap pe axa Y
+        const maxYTicks = Math.floor((H - margin * 2) / minYLabelSpacing);
+        if (maxYTicks < 2) maxYTicks = 2; // minim 2 etichete
+
+        // Dacă intervalul e prea mic, evităm împărțirea la zero
+        const yRange = maxY - minY || 1;
+
+        // Pasul dintre etichete
+        const stepY = yRange / maxYTicks;
+
+        ctx.font = "10px Arial";
+
+        ctx.textAlign = "right";
+
+        for (let i = 0; i <= maxYTicks; i++) {
+          const value = minY + i * stepY;
+          const py = scaleY(value);
+
+          // Etichetă Y
+          ctx.fillText(value.toFixed(2), margin - 5, py + 3);
+
+          // Linie punctată paralelă cu axa X
+          ctx.strokeStyle = "#cccccc";     // culoare gri deschis
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 4]);         // model punctat: 4px linie, 4px spațiu
+
+          ctx.beginPath();
+          ctx.moveTo(margin, py);
+          ctx.lineTo(W - margin, py);
+          ctx.stroke();
+
+          ctx.setLineDash([]);             // resetăm pentru alte desene
+      }
+
+
+        // Linie grafic
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+
+        data.forEach((v, i) => {
+            const px = scaleX(i);
+            const py = scaleY(v);
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        });
+
+        ctx.stroke();
+
+        // Puncte
+        ctx.fillStyle = color;
+        data.forEach((v, i) => {
+            const px = scaleX(i);
+            const py = scaleY(v);
+            ctx.beginPath();
+            ctx.arc(px, py, pointRadius, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+}
+
+
 </script>
 
 </body>

@@ -35,3 +35,8 @@ def erase_flash_littlefs():
                             encoding="utf-8",
                             errors="replace")
     print(f"\nStdout:\n{result.stdout}")
+    success_message = "Erase completed successfully"
+    if success_message in result.stdout:
+        print("Flash memory erased successfully.")
+    else:
+        print("Failed to erase flash memory.")

@@ -79,7 +79,8 @@ def install_core_version():
 def install_libraries():
     """Install the libraries for the project."""
     # Command to install the libraries
-    libraries = ["ESPAsyncWebServer", 
+    libraries = ["ESPAsyncWebServer",
+                 "ESPasycnTCP", 
                  "ArduinoJson",
                  "HX711 Arduino Library",
                  "RTClib"]

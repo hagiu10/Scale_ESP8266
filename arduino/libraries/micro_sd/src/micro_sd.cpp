@@ -90,7 +90,10 @@ void micro_sd::writeData(float weight) {
     String folder_year = "/year_" + rtc::getDateTime("year"); 
     String folder_month = "month_" + rtc::getDateTime("month");
     String file_day = "day_" + rtc::getDateTime("day");
-    doc["time"] = rtc::getDateTime("hour") + ":" + rtc::getDateTime("minute");
+    String minute = String(rtc::getDateTime("minute").toInt());
+    minute = (minute.length() < 2 ? "0" + minute : minute);
+
+    doc["time"] = rtc::getDateTime("hour") + ":" + minute;
     doc["weight"] = weight;
 
     // Write back to the file
