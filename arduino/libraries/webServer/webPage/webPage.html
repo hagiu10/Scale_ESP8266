@@ -43,7 +43,7 @@
       height: 60vh;
       min-height: 300px;
       margin-top: 10px;
-      border: 1px solid grey;
+      border: 1px solid gray;
     }
 
     /* Tabs */
@@ -216,7 +216,7 @@
     <div class="weekday">Du</div>
   </div>
 
-</div>
+  </div>
   <div class="box-chart-tabs">
     <!-- Chart -->
     <div class="weight-chart-container">
@@ -382,11 +382,32 @@ function updateChart() {
 
 function renderChart(labels, data) {
   if (!labels.length || !data.length) {
-    // for (let i = 0; i < 5; i++) {
-    //   labels.push("10:0"+i);
-    //   data.push(201.76 + i*0.01);
+    let hour = 0;
+    let minute = 0;
+
+    // for (let i = 0; i < 288; i++) {
+
+    //   // Formatăm minutele și orele corect
+    //   const hh = hour.toString().padStart(2, '0');
+    //   const mm = minute.toString().padStart(2, '0');
+
+    //   labels.push(`${hh}:${mm}`);
+    //   data.push(21.76 + (i % 20));
+
+    //   // Incrementăm timpul cu 5 minute
+    //   minute += 5;
+
+    //   if (minute >= 60) {
+    //     minute = minute % 60;
+    //     hour++;
+    //   }
+
+    //   if (hour >= 24) {
+    //     hour = 0;
+    //   }
     // }
-    labels.push("No data for selected period!");
+
+    labels.push("No data!");
     data.push(0);
   }
   setTimeout(() => {
@@ -560,8 +581,27 @@ class MiniChart {
         const minY = Math.min(...data);
         const maxY = Math.max(...data);
 
-        const scaleX = (i) => margin + (i / (labels.length - 1)) * (W - margin * 2);
-        const scaleY = (v) => H - margin - ((v - minY) / (maxY - minY)) * (H - margin * 2);
+        // === SCALE X ===
+        const scaleX = (i) => {
+            if (labels.length === 1) {
+                return W / 2; // un singur punct → centrat
+            }
+            return margin + (i / (labels.length - 1)) * (W - margin * 2);
+        };
+
+        // === SCALE Y ===
+        let yMin = minY;
+        let yMax = maxY;
+
+        if (minY === maxY) {
+            // un singur punct → range minim
+            yMin = minY;
+            yMax = maxY + 1;
+        }
+
+        const scaleY = (v) => {
+            return H - margin - ((v - yMin) / (yMax - yMin)) * (H - margin * 2);
+        };
 
         ctx.clearRect(0, 0, W, H);
 
@@ -589,25 +629,61 @@ class MiniChart {
         ctx.fillText(y.title.text, 0, 0);
         ctx.restore();
 
-        // === MARCAJE AXA X ===
-        // Lățimea minimă necesară pentru o etichetă (în px)
-        const minLabelSpacing = 50;
+       // === MARCAJE AXA X CU ETICHETE ROTITE ===
 
-        // Câte etichete încap pe axă
+        // 1. Spațiul minim necesar pentru o etichetă
+        const minLabelSpacing = 30;
+
+        // 2. Câte etichete încap pe axă
         const maxXTicks = Math.floor((W - margin * 2) / minLabelSpacing);
-        const stepX = Math.ceil(labels.length / maxXTicks);
 
+        // 3. Determinăm pasul optim
+        const step = Math.ceil(labels.length / maxXTicks);
+
+        // 4. Vector vizibilitate
+        const visible = new Array(labels.length).fill(false);
+
+        // 5. Marcăm etichetele vizibile
+        for (let i = 0; i < labels.length; i += step) {
+            visible[i] = true;
+        }
+
+        // 6. Forțăm ultima etichetă
+        visible[labels.length - 1] = true;
+
+        // 7. Desenăm etichetele rotite
+        ctx.save();
         ctx.font = "10px Arial";
         ctx.textAlign = "center";
+        ctx.textBaseline = "top";
 
-        for (let i = 0; i < labels.length; i += stepX) {
-            const px = scaleX(i);
-            ctx.fillText(labels[i], px, H - margin + 12);
+        const angle = -45 * Math.PI / 180;  // rotire -45°
+        const offsetY = 1;                  // distanță suplimentară pentru a evita suprapunerea cu axa
+        const offsetX = -10;                  // poți ajusta și orizontal dacă e necesar
+
+        for (let i = 0; i < labels.length; i++) {
+            if (!visible[i]) continue;
+
+            let px = scaleX(i);
+            let py = H - margin + 12 + offsetY;  // ridicăm eticheta
+
+            ctx.save();
+            ctx.translate(px + offsetX, py);
+            ctx.rotate(angle);
+            ctx.fillText(labels[i], 0, 0);
+            ctx.restore();
+
+            // Linie mică de marcaj
+            ctx.beginPath();
+            ctx.moveTo(px, H - margin);
+            ctx.lineTo(px, H - margin - 5);
+            ctx.stroke();
         }
+        ctx.restore();
 
         // === MARCAJE AXA Y ===
         // Înălțimea minimă necesară pentru o etichetă Y (în px)
-        const minYLabelSpacing = 30;
+        const minYLabelSpacing = 20;
 
         // Câte etichete încap pe axa Y
         const maxYTicks = Math.floor((H - margin * 2) / minYLabelSpacing);

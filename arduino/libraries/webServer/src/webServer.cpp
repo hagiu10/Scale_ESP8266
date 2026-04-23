@@ -187,6 +187,13 @@ void webServer::handleDataRequest(AsyncWebServerRequest *request) {
 }
 /* Send data for a specific day */
 void webServer::sendDataDay(AsyncWebServerRequest *request) {
+    if (!request->hasParam("year") || !request->hasParam("month") || !request->hasParam("day")) {
+        request->send(400, "application/json", "{\"error\":\"Missing parameters\"}");
+        #ifdef DEBUG
+        Serial.printf("webServer::sendDataDay - Missing parameters in request. [%lu ms]\n", millis());
+        #endif
+        return;
+    }
     String json = micro_sd::getDataFromSD(request->getParam("year")->value(), request->getParam("month")->value(), request->getParam("day")->value());
     request->send(200, "application/json", json);
     #ifdef DEBUG
@@ -195,6 +202,13 @@ void webServer::sendDataDay(AsyncWebServerRequest *request) {
 }
 /* Send data for a specific month */
 void webServer::sendDataMonth(AsyncWebServerRequest *request) {
+    if (!request->hasParam("year") || !request->hasParam("month")) {
+        request->send(400, "application/json", "{\"error\":\"Missing parameters\"}");
+        #ifdef DEBUG
+        Serial.printf("webServer::sendDataMonth - Missing parameters in request. [%lu ms]\n", millis());
+        #endif
+        return;
+    }
     String json = micro_sd::getDataFromSD(request->getParam("year")->value(), request->getParam("month")->value());
     request->send(200, "application/json", json);
     #ifdef DEBUG
@@ -203,6 +217,13 @@ void webServer::sendDataMonth(AsyncWebServerRequest *request) {
 }
 /* Send data for a specific year */
 void webServer::sendDataYear(AsyncWebServerRequest *request) {
+    if (!request->hasParam("year")) {
+        request->send(400, "application/json", "{\"error\":\"Missing parameters\"}");
+        #ifdef DEBUG
+        Serial.printf("webServer::sendDataYear - Missing parameters in request. [%lu ms]\n", millis());
+        #endif
+        return;
+    }
     String json = micro_sd::getDataFromSD(request->getParam("year")->value());
     request->send(200, "application/json", json);
     #ifdef DEBUG  
